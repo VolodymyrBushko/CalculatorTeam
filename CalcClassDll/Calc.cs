@@ -95,7 +95,7 @@ namespace CalcClassDll
         {
             try
             {
-                return (x > double.MinValue || x <= double.MaxValue) ? -x : throw new Error06(); ;
+                return (x > double.MinValue && x <= double.MaxValue) ? -x : throw new Error06(); ;
             }
             catch (Error06 e)
             {

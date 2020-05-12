@@ -66,19 +66,19 @@ namespace CalcClassDllTests
             Assert.AreEqual(Calc.ABS(-112), 112);
         }
 
-        //[TestMethod]
-        //[ExpectedException(typeof(Error09))]
-        //public void TestMethodABSException1()
-        //{
-        //    double res = Calc.ABS(double.MinValue);
-        //}
+        [TestMethod]
+        [ExpectedException(typeof(Error06))]
+        public void TestMethodABSException1()
+        {
+            double res = Calc.ABS(double.MinValue-77);
+        }
 
-        //[TestMethod]
-        //[ExpectedException(typeof(Error09))]
-        //public void TestMethodABSException2()
-        //{
-        //    double res = Calc.ABS(double.MaxValue + double.MaxValue);
-        //}
+        [TestMethod]
+        [ExpectedException(typeof(Error06))]
+        public void TestMethodABSException2()
+        {
+            double res = Calc.ABS(double.MaxValue + double.MaxValue);
+        }
 
         [TestMethod]
         public void TestMethodIABS()
@@ -86,12 +86,12 @@ namespace CalcClassDllTests
             Assert.AreEqual(Calc.IABS(12), -12);
         }
 
-        //[TestMethod]
-        //[ExpectedException(typeof(Error09))]
-        //public void TestMethodIABSException1()
-        //{
-        //    double res = Calc.IABS(double.MinValue*double.MaxValue);
-        //}
+        [TestMethod]
+        [ExpectedException(typeof(Error06))]
+        public void TestMethodIABSException()
+        {
+            double res = Calc.IABS(double.MinValue - 55555);
+        }
 
     }
 }
