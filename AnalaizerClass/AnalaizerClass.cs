@@ -12,7 +12,6 @@ namespace AnalaizerClassDll
         public static string Expression { get; set; }
         public static bool ShowMessage { get; set; }
 
-
         public static bool CheckCurrency()
         {
             ShowMessage = false;
@@ -42,6 +41,21 @@ namespace AnalaizerClassDll
             }
 
             return true;
+        }
+
+        public static string Format()
+        {
+            string result = string.Empty;
+
+            Expression.Replace(" ", string.Empty);
+
+            foreach (char item in Expression)
+                if (item == '+' || item == '-' || item == '*' || item == '/' || item == '%')
+                    result += $" {item} ";
+                else
+                    result += item;
+
+            return result;
         }
     }
 }
