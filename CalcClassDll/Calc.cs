@@ -11,7 +11,7 @@ namespace CalcClassDll
         {
             try
             {
-                return x + y;
+                return (x + y) <= double.MaxValue ? (x + y) : throw new Error06(); 
             }
             catch (Error06 e)
             {
@@ -24,7 +24,7 @@ namespace CalcClassDll
         {
             try
             {
-                return x - y;
+                return (x - y) >= double.MinValue ? (x - y) : throw new Error06();
             }
             catch (Error06 e)
             {
@@ -36,7 +36,7 @@ namespace CalcClassDll
         {
             try
             {
-                return x * y;
+                return (x * y) <= double.MaxValue ? (x * y) : throw new Error06();
             }
             catch (Error06 e)
             {
@@ -48,7 +48,7 @@ namespace CalcClassDll
         {
             try
             {
-                return x / y;
+                return y != 0 ? x / y : throw new Error09();
             }
             catch (Error09 e)
             {
@@ -74,7 +74,15 @@ namespace CalcClassDll
         {
             try
             {
-                return x >= 0 ? x : -x;
+                if (x > double.MinValue && x <= double.MaxValue)
+                {
+                    return x >= 0 ? x : -x;
+                }
+                else
+                {
+                    throw new Error06();
+                }
+                
             }
             catch (Error06 e)
             {
@@ -87,7 +95,7 @@ namespace CalcClassDll
         {
             try
             {
-                return -x;
+                return (x > double.MinValue || x <= double.MaxValue) ? -x : throw new Error06(); ;
             }
             catch (Error06 e)
             {
