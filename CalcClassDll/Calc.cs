@@ -1,4 +1,5 @@
-﻿using System; 
+﻿using CalcClassDll.Exceptions;
+using System; 
 
 namespace CalcClassDll
 {
@@ -12,7 +13,7 @@ namespace CalcClassDll
             {
                 return x + y;
             }
-            catch (Exception e)
+            catch (Error06 e)
             {
                 LastError = e.Message;
                 throw e;
@@ -25,7 +26,7 @@ namespace CalcClassDll
             {
                 return x - y;
             }
-            catch (Exception e)
+            catch (Error06 e)
             {
                 LastError = e.Message;
                 throw e;
@@ -37,7 +38,7 @@ namespace CalcClassDll
             {
                 return x * y;
             }
-            catch (Exception e)
+            catch (Error06 e)
             {
                 LastError = e.Message;
                 throw e;
@@ -49,7 +50,7 @@ namespace CalcClassDll
             {
                 return x / y;
             }
-            catch (Exception e)
+            catch (Error09 e)
             {
                 LastError = e.Message;
                 throw e;
@@ -62,7 +63,7 @@ namespace CalcClassDll
             {
                 return x % y;
             }
-            catch (Exception e)
+            catch (Error06 e)
             {
                 LastError = e.Message;
                 throw e;
@@ -75,7 +76,7 @@ namespace CalcClassDll
             {
                 return x >= 0 ? x : -x;
             }
-            catch (Exception e)
+            catch (Error06 e)
             {
                 LastError = e.Message;
                 throw e;
@@ -88,7 +89,7 @@ namespace CalcClassDll
             {
                 return -x;
             }
-            catch (Exception e)
+            catch (Error06 e)
             {
                 LastError = e.Message;
                 throw e;
