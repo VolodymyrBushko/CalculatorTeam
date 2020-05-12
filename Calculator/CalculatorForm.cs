@@ -1,12 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.Collections;
 using System.Windows.Forms;
+using AnalaizerClassDll;
 
 namespace Calculator
 {
@@ -15,6 +10,12 @@ namespace Calculator
         public Form1()
         {
             InitializeComponent();
+        }
+
+        private void buttonEqaul_Click(object sender, EventArgs e)
+        {
+            AnalaizerClassDll.AnalaizerClass.Expression = "1+5*2+(10+10/2)*2+3-7+1*(10%3+100)";
+            textBoxResult.Text = AnalaizerClassDll.AnalaizerClass.Estimate();
         }
     }
 }

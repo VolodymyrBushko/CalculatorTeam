@@ -219,6 +219,7 @@
             this.buttonEqaul.TabIndex = 19;
             this.buttonEqaul.Text = "=";
             this.buttonEqaul.UseVisualStyleBackColor = true;
+            this.buttonEqaul.Click += new System.EventHandler(this.buttonEqaul_Click);
             // 
             // buttonMC
             // 
