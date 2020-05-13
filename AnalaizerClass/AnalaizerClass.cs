@@ -6,15 +6,23 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using CalcClassDll;
 
 namespace AnalaizerClassDll
 {
 	public static class AnalaizerClass
 	{
-		private static int erposition;
+		private static int erposition = -1;
+		private static string operations = "+-*/%";
 
 		public static string Expression { get; set; }
 		public static bool ShowMessage { get; set; }
+
+		private static void SetError(int position)
+		{
+			erposition = position;
+			ShowMessage = true;
+		}
 
 		public static bool CheckCurrency()
 		{
@@ -33,6 +41,7 @@ namespace AnalaizerClassDll
 				{
 					erposition = i;
 					ShowMessage = true;
+					Calc.LastError = new Error01(erposition).Message;
 					return false;
 				}
 			}
@@ -41,38 +50,77 @@ namespace AnalaizerClassDll
 			{
 				erposition = Expression.Length - 1;
 				ShowMessage = true;
+				Calc.LastError = new Error01(erposition).Message;
 				return false;
 			}
 
 			return true;
 		}
 
-		public static string Format()
+		public static string Format(string expression)
 		{
+			if (ShowMessage)
+				return Calc.LastError;
+
 			string result = string.Empty;
+			string exp = expression.Replace(" ", string.Empty);
 
-			Expression.Replace(" ", string.Empty);
+			for (int i = 0; i < exp.Length; i++)
+			{
+				if ((i + 1 < exp.Length) && operations.Contains(exp[i]) && operations.Contains(exp[i + 1]))
+				{
+					SetError(i);
+					Calc.LastError = new Error04(erposition).Message;
+					return Calc.LastError;
+				}
 
-			foreach (char item in Expression)
-				if (item == '+' || item == '-' || item == '*' || item == '/' || item == '%')
-					result += $" {item} ";
+				if (i == 0 && exp.Length > 2 && char.IsDigit(exp[1]) && (exp[0] == '+' || exp[0] == '-'))
+					result += exp[i];
+				else if ((exp[i] == '+' || exp[i] == '-') && exp[i - 1] == '(')
+					result += exp[i];
+				else if (operations.Contains(exp[i]))
+					result += $" {exp[i]} ";
+				else if (char.IsDigit(exp[i]) || exp[i] == '(' || exp[i] == ')')
+					result += exp[i];
 				else
-					result += item;
+				{
+					SetError(i);
+					Calc.LastError = new Error02(erposition).Message;
+					return Calc.LastError;
+				}
+			}
+
+			if (operations.Contains(exp.Last()) || exp.Last() == '(')
+			{
+				SetError(exp.Length - 1);
+				Calc.LastError = new Error05().Message;
+				return Calc.LastError;
+			}
 
 			return result;
 		}
 
-		public static ArrayList CreateStack(string expression)
+		public static ArrayList CreateStack(string exp)
 		{
+			if (ShowMessage)
+				return null;
+
 			int i = 0;
 			Stack<char> stackChar = new Stack<char>();
 			string tmp = string.Empty, str = string.Empty;
 
-			str = expression.Replace(" ", string.Empty);
+			str = exp.Replace(" ", string.Empty);
 
 			while (i < str.Length)
 			{
-				if (char.IsDigit(str[i]) || str[i] == '.')
+				if (str.Length > i + 1 && str[i] == '(' && (str[i + 1] == '+' || str[i + 1] == '-'))
+				{
+					tmp += str[++i];
+					stackChar.Push(str[i - 1]);
+				}
+				else if (i == 0 && exp.Length > 2 && char.IsDigit(exp[1]) && (exp[0] == '+' || exp[0] == '-'))
+					tmp += str[i];
+				else if (char.IsDigit(str[i]) || str[i] == '.')
 					tmp += str[i];
 				else if (str[i] == '(')
 					stackChar.Push(str[i]);
@@ -105,7 +153,7 @@ namespace AnalaizerClassDll
 						{
 							tmp += stackChar.Peek();
 							tmp += ' ';
-							stackChar.Peek();
+							stackChar.Pop();
 						}
 					}
 					stackChar.Push(str[i]);
@@ -125,7 +173,11 @@ namespace AnalaizerClassDll
 
 		public static string RunEstimate(ArrayList stack)
 		{
-			int i = 0; double a, b;
+			if (ShowMessage)
+				return Calc.LastError;
+
+			int i = 0;
+			double a, b;
 			string tmp = string.Empty, str = string.Empty;
 			Stack<double> stackDouble = new Stack<double>();
 
@@ -134,7 +186,9 @@ namespace AnalaizerClassDll
 
 			while (i < str.Length)
 			{
-				if (char.IsDigit(str[i]) || str[i] == '.')
+				if ((str[i] == '+' || str[i] == '-') && str.Length > i + 1 && char.IsDigit(str[i + 1]))
+					tmp += str[i];
+				else if (char.IsDigit(str[i]) || str[i] == '.')
 					tmp += str[i];
 				else if (str[i] == ' ' && i != (str.Length - 1))
 				{
@@ -168,8 +222,7 @@ namespace AnalaizerClassDll
 		public static string Estimate()
 		{
 			CheckCurrency();
-			Format();
-			return RunEstimate(CreateStack(Expression));
+			return RunEstimate(CreateStack(Format(Expression)));
 		}
 	}
 }
