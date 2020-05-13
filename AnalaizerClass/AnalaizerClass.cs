@@ -3,9 +3,6 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Forms;
 using CalcClassDll;
 
 namespace AnalaizerClassDll
@@ -27,6 +24,7 @@ namespace AnalaizerClassDll
 		public static bool CheckCurrency()
 		{
 			int balance = 0;
+
 			erposition = 0;
 			ShowMessage = false;
 
@@ -39,8 +37,7 @@ namespace AnalaizerClassDll
 
 				if (balance < 0)
 				{
-					erposition = i;
-					ShowMessage = true;
+					SetError(i);
 					Calc.LastError = new Error01(erposition).Message;
 					return false;
 				}
@@ -48,8 +45,7 @@ namespace AnalaizerClassDll
 
 			if (balance != 0)
 			{
-				erposition = Expression.Length - 1;
-				ShowMessage = true;
+				SetError(Expression.Length - 1);
 				Calc.LastError = new Error01(erposition).Message;
 				return false;
 			}
@@ -59,11 +55,9 @@ namespace AnalaizerClassDll
 
 		public static string Format(string expression)
 		{
-			if (ShowMessage)
-				return Calc.LastError;
+			if (ShowMessage) return Calc.LastError;
 
-			string result = string.Empty;
-			string exp = expression.Replace(" ", string.Empty);
+			string result = string.Empty, exp = expression.Replace(" ", string.Empty);
 
 			for (int i = 0; i < exp.Length; i++)
 			{
@@ -80,7 +74,7 @@ namespace AnalaizerClassDll
 					result += exp[i];
 				else if (operations.Contains(exp[i]))
 					result += $" {exp[i]} ";
-				else if (char.IsDigit(exp[i]) || exp[i] == '(' || exp[i] == ')')
+				else if (char.IsDigit(exp[i]) || exp[i] == '(' || exp[i] == ')' || exp[i] == '.')
 					result += exp[i];
 				else
 				{
@@ -100,27 +94,17 @@ namespace AnalaizerClassDll
 			return result;
 		}
 
-		public static ArrayList CreateStack(string exp)
+		public static ArrayList CreateStack(string str)
 		{
-			if (ShowMessage)
-				return null;
+			if (ShowMessage) return null;
 
 			int i = 0;
+			string tmp = string.Empty;
 			Stack<char> stackChar = new Stack<char>();
-			string tmp = string.Empty, str = string.Empty;
-
-			str = exp.Replace(" ", string.Empty);
 
 			while (i < str.Length)
 			{
-				if (str.Length > i + 1 && str[i] == '(' && (str[i + 1] == '+' || str[i + 1] == '-'))
-				{
-					tmp += str[++i];
-					stackChar.Push(str[i - 1]);
-				}
-				else if (i == 0 && exp.Length > 2 && char.IsDigit(exp[1]) && (exp[0] == '+' || exp[0] == '-'))
-					tmp += str[i];
-				else if (char.IsDigit(str[i]) || str[i] == '.')
+				if (char.IsDigit(str[i]) || str[i] == '.')
 					tmp += str[i];
 				else if (str[i] == '(')
 					stackChar.Push(str[i]);
@@ -138,18 +122,18 @@ namespace AnalaizerClassDll
 				else if (!char.IsDigit(str[i]))
 				{
 					tmp += ' ';
-					if (stackChar.Count != 0 && str[i] == '+' || str[i] == '-')
+					if (stackChar.Count > 0 && str[i] == '+' || str[i] == '-')
 					{
-						while (stackChar.Count != 0 && stackChar.Peek() != '(')
+						while (stackChar.Count > 0 && stackChar.Peek() != '(')
 						{
 							tmp += stackChar.Peek();
 							tmp += ' ';
 							stackChar.Pop();
 						}
 					}
-					else if (stackChar.Count != 0 && str[i] == '*' || str[i] == '/')
+					else if (stackChar.Count > 0 && str[i] == '*' || str[i] == '/')
 					{
-						while (stackChar.Count != 0 && stackChar.Peek() != '(' && stackChar.Peek() != '+' && stackChar.Peek() != '-' && stackChar.Peek() != '%')
+						while (stackChar.Count > 0 && stackChar.Peek() != '(' && stackChar.Peek() != '+' && stackChar.Peek() != '-')
 						{
 							tmp += stackChar.Peek();
 							tmp += ' ';
@@ -161,34 +145,37 @@ namespace AnalaizerClassDll
 				i++;
 			}
 			tmp += ' ';
-			while (stackChar.Count != 0)
+			while (stackChar.Count > 0)
 			{
 				tmp += stackChar.Peek();
 				tmp += ' ';
 				stackChar.Pop();
 			}
 
-			return new ArrayList(tmp.Split(' '));
+			ArrayList result = new ArrayList(tmp.Split(' '));
+
+			while (result.Contains(""))
+				result.Remove("");
+
+			return result;
 		}
 
 		public static string RunEstimate(ArrayList stack)
 		{
-			if (ShowMessage)
-				return Calc.LastError;
+			if (ShowMessage) return Calc.LastError;
 
-			int i = 0;
-			double a, b;
-			string tmp = string.Empty, str = string.Empty;
+			string tmp = "";
 			Stack<double> stackDouble = new Stack<double>();
+			int i = 0; double a, b;
+
+			string str = string.Empty;
 
 			foreach (var item in stack)
 				str += $"{item} ";
 
 			while (i < str.Length)
 			{
-				if ((str[i] == '+' || str[i] == '-') && str.Length > i + 1 && char.IsDigit(str[i + 1]))
-					tmp += str[i];
-				else if (char.IsDigit(str[i]) || str[i] == '.')
+				if (char.IsDigit(str[i]) || str[i] == '.')
 					tmp += str[i];
 				else if (str[i] == ' ' && i != (str.Length - 1))
 				{
@@ -202,6 +189,7 @@ namespace AnalaizerClassDll
 					stackDouble.Pop();
 					b = stackDouble.Peek();
 					stackDouble.Pop();
+
 					if (str[i] == '+')
 						stackDouble.Push(a + b);
 					else if (str[i] == '-')
