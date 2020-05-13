@@ -31,5 +31,11 @@ namespace Calculator
             if (textBoxExpression.Text.Length > 0)
                 textBoxExpression.Text = textBoxExpression.Text.Remove(textBoxExpression.Text.Length - 1);
         }
+
+        private void buttonEqaul_Click(object sender, EventArgs e)
+        {
+            AnalaizerClassDll.AnalaizerClass.Expression = textBoxExpression.Text;
+            textBoxResult.Text = AnalaizerClassDll.AnalaizerClass.Estimate();
+        }
     }
 }
