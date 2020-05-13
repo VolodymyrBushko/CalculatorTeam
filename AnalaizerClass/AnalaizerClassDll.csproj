@@ -44,6 +44,12 @@
   <ItemGroup>
     <Compile Include="AnalaizerClass.cs" />
     <Compile Include="Exceptions\Error01.cs" />
+    <Compile Include="Exceptions\Error02.cs" />
+    <Compile Include="Exceptions\Error03.cs" />
+    <Compile Include="Exceptions\Error04.cs" />
+    <Compile Include="Exceptions\Error05.cs" />
+    <Compile Include="Exceptions\Error07.cs" />
+    <Compile Include="Exceptions\Error08.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

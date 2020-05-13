@@ -8,6 +8,6 @@ namespace AnalaizerClass.Exceptions
 
         public Error01(int position) => positionError = position;
 
-        public override string Message => $"Incorrect structure in parentheses, error on {positionError} characters.";
+        public override string Message => $"Error01 : Incorrect structure in parentheses, error on {positionError} position.";
     }
 }
