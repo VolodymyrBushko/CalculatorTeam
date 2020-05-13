@@ -213,6 +213,7 @@
             this.buttonPlusMinus.TabIndex = 12;
             this.buttonPlusMinus.Text = "+/-";
             this.buttonPlusMinus.UseVisualStyleBackColor = true;
+            this.buttonPlusMinus.Click += new System.EventHandler(this.buttonPlusMinus_Click);
             // 
             // buttonPlus
             // 
@@ -244,6 +245,7 @@
             this.buttonMC.TabIndex = 18;
             this.buttonMC.Text = "MC";
             this.buttonMC.UseVisualStyleBackColor = true;
+            this.buttonMC.Click += new System.EventHandler(this.buttonMC_Click);
             // 
             // buttonMplus
             // 
@@ -254,6 +256,7 @@
             this.buttonMplus.TabIndex = 17;
             this.buttonMplus.Text = "M+";
             this.buttonMplus.UseVisualStyleBackColor = true;
+            this.buttonMplus.Click += new System.EventHandler(this.buttonMplus_Click);
             // 
             // buttonMR
             // 
@@ -265,6 +268,7 @@
             this.buttonMR.TabIndex = 16;
             this.buttonMR.Text = "MR";
             this.buttonMR.UseVisualStyleBackColor = true;
+            this.buttonMR.Click += new System.EventHandler(this.buttonMR_Click);
             // 
             // labelExpression
             // 
