@@ -272,10 +272,11 @@
             // textBoxExpression
             // 
             this.textBoxExpression.Location = new System.Drawing.Point(73, 20);
+            this.textBoxExpression.MaxLength = 70000;
             this.textBoxExpression.Name = "textBoxExpression";
             this.textBoxExpression.Size = new System.Drawing.Size(252, 20);
             this.textBoxExpression.TabIndex = 22;
-            this.textBoxExpression.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.CheckEnterKeyPress);
+            this.textBoxExpression.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.TextBoxKeyPress);
             // 
             // textBoxResult
             // 

@@ -9,6 +9,7 @@ namespace AnalaizerClassDll
 {
 	public static class AnalaizerClass
 	{
+		private const int MAXSTACK = 30;
 		private static string operations = "+-*/%";
 		public static string Expression { get; set; }
 
@@ -34,6 +35,9 @@ namespace AnalaizerClassDll
 			{
 				if ((i + 1 < expression.Length) && operations.Contains(expression[i]) && operations.Contains(expression[i + 1]))
 					throw new Error04(i);
+
+				if ((i + 2 < expression.Length) && (expression[i] == '(' && expression[i + 1] == '(' && expression[i + 2] == '('))
+					throw new Error03();
 
 				if (char.IsDigit(expression[i]) && i + 1 < expression.Length && expression[i + 1] == '(')
 					result += $"{expression[i]} * ";
@@ -117,6 +121,9 @@ namespace AnalaizerClassDll
 			while (result.Contains(""))
 				result.Remove("");
 
+			if (result.Count > MAXSTACK)
+				throw new Error08();
+
 			return result;
 		}
 
@@ -158,6 +165,7 @@ namespace AnalaizerClassDll
 							case '%': stackDouble.Push(Calc.Mod(b, a)); break;
 						}
 					}
+					catch (InvalidOperationException) { return new Error03().Message; }
 					catch (Exception ex) { return ex.Message; }
 				}
 				i++;
