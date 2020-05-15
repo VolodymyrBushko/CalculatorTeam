@@ -28,6 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
+            this.components = new System.ComponentModel.Container();
             this.button1 = new System.Windows.Forms.Button();
             this.button2 = new System.Windows.Forms.Button();
             this.button3 = new System.Windows.Forms.Button();
@@ -57,6 +58,7 @@
             this.buttonBackspace = new System.Windows.Forms.Button();
             this.buttonLeftBracket = new System.Windows.Forms.Button();
             this.buttonC = new System.Windows.Forms.Button();
+            this.timer1 = new System.Windows.Forms.Timer(this.components);
             this.groupBoxEditing.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -360,6 +362,10 @@
             this.buttonC.UseVisualStyleBackColor = true;
             this.buttonC.Click += new System.EventHandler(this.buttonC_Click);
             // 
+            // timer1
+            // 
+            this.timer1.Tick += new System.EventHandler(this.timer1_Tick);
+            // 
             // Form1
             // 
             this.AllowDrop = true;
@@ -432,6 +438,7 @@
         private System.Windows.Forms.Button buttonBackspace;
         private System.Windows.Forms.Button buttonLeftBracket;
         private System.Windows.Forms.Button buttonC;
+        private System.Windows.Forms.Timer timer1;
     }
 }
 
