@@ -28,21 +28,21 @@ namespace AnalaizerClassDllTests
         [TestMethod]
         public void Format_TrueExpression_TrueReturned()
         {
-            string res = AnalaizerClassDll.AnalaizerClass.Format("10+ 5 0 * ( 1 +  9  )");
+            string res = AnalaizerClassDll.AnalaizerClass.Format("10+ 50 * ( 1 +  9  )");
             Assert.AreEqual(res, "10 + 50 * (1 + 9)");
         }
 
         [TestMethod]
         public void Format_DoubleSymbols_Error04Returned()
         {
-            string res = AnalaizerClassDll.AnalaizerClass.Format("10++ 5 0 * ( 1 +  9)");
+            string res = AnalaizerClassDll.AnalaizerClass.Format("10++ 50 * ( 1 +  9)");
             Assert.AreEqual(res.Substring(0, "Error04".Length), "Error04");
         }
 
         [TestMethod]
         public void Format_UnknownSymbols_Error02Returned()
         {
-            string res = AnalaizerClassDll.AnalaizerClass.Format("@10+ 5 0 * ( 1 +  9)");
+            string res = AnalaizerClassDll.AnalaizerClass.Format("@10+ 50 * ( 1 +  9)");
             Assert.AreEqual(res.Substring(0, "Error02".Length), "Error02");
         }
 

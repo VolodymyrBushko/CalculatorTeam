@@ -9,150 +9,110 @@ namespace AnalaizerClassDll
 {
 	public static class AnalaizerClass
 	{
-		private static int erposition = -1;
 		private static string operations = "+-*/%";
-
 		public static string Expression { get; set; }
-		public static bool ShowMessage { get; set; }
 
-		private static void SetError(int position)
+		public static bool CheckCurrency(string expression)
 		{
-			erposition = position;
-			ShowMessage = true;
-		}
+			int open = expression.Count(x => x == '('),
+				close = expression.Count(x => x == ')');
 
-		public static bool CheckCurrency()
-		{
-			int balance = 0;
-
-			erposition = 0;
-			ShowMessage = false;
-
-			for (int i = 0; i < Expression.Length; i++)
-			{
-				if (Expression[i].Equals('('))
-					balance++;
-				else if (Expression[i].Equals(')'))
-					balance--;
-
-				if (balance < 0)
-				{
-					SetError(i);
-					Calc.LastError = new Error01(erposition).Message;
-					return false;
-				}
-			}
-
-			if (balance != 0)
-			{
-				SetError(Expression.Length - 1);
-				Calc.LastError = new Error01(erposition).Message;
-				return false;
-			}
+			if (open > close)
+				throw new Error01(expression.LastIndexOf('('));
+			else if (close > open)
+				throw new Error01(expression.LastIndexOf(')'));
 
 			return true;
 		}
 
 		public static string Format(string expression)
 		{
-			if (ShowMessage) return Calc.LastError;
+			string result = string.Empty;
+			expression = expression.Replace(" ", string.Empty);
 
-			string result = string.Empty, exp = expression.Replace(" ", string.Empty);
-
-			for (int i = 0; i < exp.Length; i++)
+			for (int i = 0; i < expression.Length; i++)
 			{
-				if ((i + 1 < exp.Length) && operations.Contains(exp[i]) && operations.Contains(exp[i + 1]))
-				{
-					SetError(i);
-					Calc.LastError = new Error04(erposition).Message;
-					return Calc.LastError;
-				}
+				if ((i + 1 < expression.Length) && operations.Contains(expression[i]) && operations.Contains(expression[i + 1]))
+					throw new Error04(i);
 
-				if (i == 0 && exp.Length > 2 && char.IsDigit(exp[1]) && (exp[0] == '+' || exp[0] == '-'))
-					result += exp[i];
-				else if ((exp[i] == '+' || exp[i] == '-') && exp[i - 1] == '(')
-					result += exp[i];
-				else if (operations.Contains(exp[i]))
-					result += $" {exp[i]} ";
-				else if (char.IsDigit(exp[i]) || exp[i] == '(' || exp[i] == ')' || exp[i] == '.')
-					result += exp[i];
+				if (char.IsDigit(expression[i]) && i + 1 < expression.Length && expression[i + 1] == '(')
+					result += $"{expression[i]} * ";
+				else if (i == 0 && char.IsDigit(expression[1]) && (expression[0] == '+' || expression[0] == '-'))
+					result += expression[i];
+				else if ((expression[i] == '+' || expression[i] == '-') && i - 1 >= 0 && expression[i - 1] == '(')
+					result += expression[i];
+				else if (operations.Contains(expression[i]))
+					result += $" {expression[i]} ";
+				else if (char.IsDigit(expression[i]) || expression[i] == '(' || expression[i] == ')' || expression[i] == '.')
+					result += expression[i];
 				else
-				{
-					SetError(i);
-					Calc.LastError = new Error02(erposition).Message;
-					return Calc.LastError;
-				}
+					throw new Error02(i);
 			}
 
-			if (operations.Contains(exp.Last()) || exp.Last() == '(')
-			{
-				SetError(exp.Length - 1);
-				Calc.LastError = new Error05().Message;
-				return Calc.LastError;
-			}
+			if (operations.Contains(expression.Last()) || expression.Last() == '(')
+				throw new Error05();
 
 			return result;
 		}
 
-		public static ArrayList CreateStack(string str)
+		public static ArrayList CreateStack(string expression)
 		{
-			if (ShowMessage) return null;
-
-			int i = 0;
-			string tmp = string.Empty;
+			int i = 0; string resultString = string.Empty;
 			Stack<char> stackChar = new Stack<char>();
 
-			while (i < str.Length)
+			while (i < expression.Length)
 			{
-				if (char.IsDigit(str[i]) || str[i] == '.')
-					tmp += str[i];
-				else if (str[i] == '(')
-					stackChar.Push(str[i]);
-				else if (str[i] == ')')
+				if (char.IsDigit(expression[i]) || expression[i] == '.'
+					|| ((expression[0] == '+' || expression[0] == '-') && char.IsDigit(expression[1]) && i == 0)
+					|| ((expression[i] == '+' || expression[i] == '-') && char.IsDigit(expression[i + 1]) && expression[i - 1] == '('))
+					resultString += expression[i];
+				else if (expression[i] == '(')
+					stackChar.Push(expression[i]);
+				else if (expression[i] == ')')
 				{
-					tmp += ' ';
+					resultString += ' ';
 					while (stackChar.Peek() != '(')
 					{
-						tmp += stackChar.Peek();
-						tmp += ' ';
+						resultString += stackChar.Peek();
+						resultString += ' ';
 						stackChar.Pop();
 					}
 					stackChar.Pop();
 				}
-				else if (!char.IsDigit(str[i]))
+				else if (!char.IsDigit(expression[i]))
 				{
-					tmp += ' ';
-					if (stackChar.Count > 0 && str[i] == '+' || str[i] == '-')
+					resultString += ' ';
+					if (stackChar.Count > 0 && expression[i] == '+' || expression[i] == '-')
 					{
 						while (stackChar.Count > 0 && stackChar.Peek() != '(')
 						{
-							tmp += stackChar.Peek();
-							tmp += ' ';
+							resultString += stackChar.Peek();
+							resultString += ' ';
 							stackChar.Pop();
 						}
 					}
-					else if (stackChar.Count > 0 && str[i] == '*' || str[i] == '/')
+					else if (stackChar.Count > 0 && expression[i] == '*' || expression[i] == '/')
 					{
 						while (stackChar.Count > 0 && stackChar.Peek() != '(' && stackChar.Peek() != '+' && stackChar.Peek() != '-')
 						{
-							tmp += stackChar.Peek();
-							tmp += ' ';
+							resultString += stackChar.Peek();
+							resultString += ' ';
 							stackChar.Pop();
 						}
 					}
-					stackChar.Push(str[i]);
+					stackChar.Push(expression[i]);
 				}
 				i++;
 			}
-			tmp += ' ';
+			resultString += ' ';
 			while (stackChar.Count > 0)
 			{
-				tmp += stackChar.Peek();
-				tmp += ' ';
+				resultString += stackChar.Peek();
+				resultString += ' ';
 				stackChar.Pop();
 			}
 
-			ArrayList result = new ArrayList(tmp.Split(' '));
+			ArrayList result = new ArrayList(resultString.Split(' '));
 
 			while (result.Contains(""))
 				result.Remove("");
@@ -162,54 +122,52 @@ namespace AnalaizerClassDll
 
 		public static string RunEstimate(ArrayList stack)
 		{
-			if (ShowMessage) return Calc.LastError;
-
-			string tmp = "";
 			Stack<double> stackDouble = new Stack<double>();
-			int i = 0; double a, b;
-
-			string str = string.Empty;
+			string tmp = string.Empty, expression = string.Empty;
+			int i = 0; double a = 0, b = 0;
 
 			foreach (var item in stack)
-				str += $"{item} ";
+				expression += $"{item} ";
 
-			while (i < str.Length)
+			while (i < expression.Length)
 			{
-				if (char.IsDigit(str[i]) || str[i] == '.')
-					tmp += str[i];
-				else if (str[i] == ' ' && i != (str.Length - 1))
+				if (char.IsDigit(expression[i]) || expression[i] == '.'
+					|| ((expression[i] == '+' || expression[i] == '-') && char.IsDigit(expression[i + 1]))) // Якщо число з унарним +/-, то це коректно
+					tmp += expression[i];
+				else if (expression[i] == ' ' && i != (expression.Length - 1))
 				{
-					if (i != 0 && char.IsDigit(str[i - 1]))
+					if (i != 0 && char.IsDigit(expression[i - 1]))
 						stackDouble.Push(Convert.ToDouble(tmp));
-					tmp = "";
+					tmp = string.Empty;
 				}
-				else if (!char.IsDigit(str[i]) && str[i] != ' ' && str[i] != '.')
+				else if (!char.IsDigit(expression[i]) && expression[i] != ' ' && expression[i] != '.')
 				{
-					a = stackDouble.Peek();
-					stackDouble.Pop();
-					b = stackDouble.Peek();
-					stackDouble.Pop();
+					try
+					{
+						a = stackDouble.Peek();
+						stackDouble.Pop();
+						b = stackDouble.Peek();
+						stackDouble.Pop();
 
-					if (str[i] == '+')
-						stackDouble.Push(a + b);
-					else if (str[i] == '-')
-						stackDouble.Push(b - a);
-					else if (str[i] == '*')
-						stackDouble.Push(a * b);
-					else if (str[i] == '/')
-						stackDouble.Push(b / a);
-					else if (str[i] == '%')
-						stackDouble.Push(b % a);
+						switch (expression[i])
+						{
+							case '+': stackDouble.Push(Calc.Add(a, b)); break;
+							case '-': stackDouble.Push(Calc.Sub(b, a)); break;
+							case '*': stackDouble.Push(Calc.Mult(a, b)); break;
+							case '/': stackDouble.Push(Calc.Div(b, a)); break;
+							case '%': stackDouble.Push(Calc.Mod(b, a)); break;
+						}
+					}
+					catch (Exception ex) { return ex.Message; }
 				}
 				i++;
 			}
-
 			return stackDouble.Peek().ToString();
 		}
 
 		public static string Estimate()
 		{
-			CheckCurrency();
+			CheckCurrency(Expression);
 			return RunEstimate(CreateStack(Format(Expression)));
 		}
 	}
