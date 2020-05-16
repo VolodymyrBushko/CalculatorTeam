@@ -10,8 +10,8 @@ namespace Calculator
     public partial class Form1 : Form
     {
         private double Memory = 0;
-        private bool znakPlus = true;
-
+        int timeForReactPlusMinus=0;
+        bool isMyBrecet = false;
         public Form1()
         {
             InitializeComponent();
@@ -37,36 +37,88 @@ namespace Calculator
         }
 
         //Реалізувати обробники подій на кнопки: "+/-", "MR", "M+", "MC".
+        //Якщо між сусідніми натисненнями на кнопку<+/-> проходить менше 3 секунд, то введений оператор міняється на протилежний.
+        //Якщо між сусідніми натисненнями на кнопку <+/-> проходить більше 3 секунд, то до виразу дописується знак «-». 
+
         private void buttonPlusMinus_Click(object sender, EventArgs e)
         {
-            //int n = textBoxExpression.Text.Length;
-            //Char x = textBoxExpression.Text.Last();
-            //string tmp = textBoxExpression.Text;
-            if (znakPlus == true)
+            //Task<Book> task2 = new Task(() =>
+            //{
+            //   
+            //});
+            //task2.Start();
+            timer1.Start();
+            if (timeForReactPlusMinus <= 3)
             {
-                znakPlus = false;
-                textBoxExpression.Text = "-" + textBoxExpression.Text;
+                timeForReactPlusMinus = 0;
+                //введений оператор міняється на протилежний.
+                if (!string.IsNullOrEmpty(textBoxExpression.Text))
+                {
+                    string tmpString = textBoxExpression.Text.TrimEnd();
+                    if (tmpString.EndsWith("-"))
+                    {
+                        tmpString = tmpString.TrimEnd('-');
+                        textBoxExpression.Text = tmpString + "+";
+                    }
+                    else if (tmpString.EndsWith("+"))
+                    {
+                        tmpString = tmpString.TrimEnd('+');
+                        textBoxExpression.Text = tmpString + "-";
+                    }
+                } 
             }
-            else if (znakPlus == false)
+            else
             {
-                znakPlus = true;
-                textBoxExpression.Text = "+" + textBoxExpression.Text;
-            } 
+                timeForReactPlusMinus = 0;
+                //до виразу дописується знак «-».  
+                try
+                {
+                    textBoxExpression.Text = (double.Parse(textBoxExpression.Text) * (-1)).ToString();
+                }
+                catch (Exception)
+                {
+                    if (!string.IsNullOrEmpty(textBoxExpression.Text))//чи ця перевірка не зайва
+                    {
+                        if (textBoxExpression.Text.StartsWith("-"))
+                        { 
+                            textBoxExpression.Text = textBoxExpression.Text.TrimStart('-');
+                            if (isMyBrecet)//треба забрати свої дужки  &  isMyBrecet=false;
+                            {
+                                //textBoxExpression.Text= textBoxExpression.Text.
+
+                            //isMyBrecet=false;
+                            }
+                    }
+                        else //if (textBoxExpression.Text.StartsWith("+"))
+                        {
+                            textBoxExpression.Text = "-(" + textBoxExpression.Text + ")";
+                            isMyBrecet = true;
+                        }
+                    } 
+                }
+            }
         }
 
         private void buttonMplus_Click(object sender, EventArgs e)
         {
-            Memory += Convert.ToInt32(textBoxResult.Text);
+            try
+            {
+                Memory += double.Parse(textBoxResult.Text);
+            }
+            catch (Exception )
+            {
+                MessageBox.Show("Неможливо перетворити до числа");
+            }  
         } 
 
         private void buttonMC_Click(object sender, EventArgs e)
         {
             Memory = 0;
         }
-
+        //При натисненні на кнопку MR число з пам'яті приписується в кінець виразу в рядку «Вираз». 
         private void buttonMR_Click(object sender, EventArgs e)
         {
-            textBoxResult.Text = Memory.ToString();
+            textBoxExpression.Text += Memory.ToString();
         }
 
         private double GetLastNumber(string expression)
@@ -94,6 +146,14 @@ namespace Calculator
         {
             AnalaizerClassDll.AnalaizerClass.Expression = textBoxExpression.Text;
             textBoxResult.Text = AnalaizerClassDll.AnalaizerClass.Estimate();
+        }
+        private void timer1_Tick(object sender, EventArgs e)
+        {
+            timeForReactPlusMinus++;
+            if (timeForReactPlusMinus > 5)
+            {
+                timer1.Stop();
+            }
         }
     }
 }
