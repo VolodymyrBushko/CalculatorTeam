@@ -13,6 +13,8 @@ namespace Calculator
     public partial class Form1 : Form
     {
         private const int MAXTEXT = 65536;
+        private static bool isPressed = false;
+        private static int counter = 0;
 
         public Form1(string[] args)
         {
@@ -45,6 +47,42 @@ namespace Calculator
                     throw new Error07();
             }
             catch (Exception ex) { textBoxResult.Text = ex.Message; }
+        }
+
+        private void buttonPlusMinus_MouseDown(object sender, MouseEventArgs e)
+        {
+            isPressed = true;
+
+            Task.Run(() =>
+            {
+                while (isPressed)
+                {
+                    counter++;
+                    Thread.Sleep(1000);
+                }
+            });
+        }
+
+        private void buttonPlusMinus_MouseUp(object sender, MouseEventArgs e)
+        {
+            isPressed = false;
+
+            string text = textBoxExpression.Text.TrimEnd();
+            char last = text.Last();
+
+            if (counter < 3 && "+-".Contains(last))
+            {
+                text = text.Remove(text.Length - 1);
+
+                if (last == '+' || last == '-')
+                    text += last == '+' ? '-' : '+';
+
+                textBoxExpression.Text = text;
+            }
+            else if (counter > 3)
+                textBoxExpression.Text = $"-({text})";
+
+            counter = 0;
         }
     }
 }
