@@ -10,63 +10,56 @@ namespace AnalaizerClassDllTests
     public class AnalaizerClassTests
     {
         [TestMethod]
-        public void CheckCurrency_TrueExpression_TrueReturned()
+        public void CheckCurrency_OnePlusOpenOnePlusOneClose_TrueReturned()
         {
-            AnalaizerClassDll.AnalaizerClass.Expression = "10+50*(1+9)";
-            bool res = AnalaizerClassDll.AnalaizerClass.CheckCurrency();
-            Assert.AreEqual(res, true);
+            bool expected = true,
+                actual = AnalaizerClassDll.AnalaizerClass.CheckCurrency("1+(1+1)");
+
+            Assert.AreEqual(expected, actual);
         }
 
         [TestMethod]
-        public void CheckCurrency_FalseExpression_FalseAndError01Return()
+        [ExpectedException(typeof(Error01))]
+        public void CheckCurrency_OnePlusOpenOnePlusOne_Error01Returned()
         {
-            AnalaizerClassDll.AnalaizerClass.Expression = "10+50*(1+9";
-            bool res = AnalaizerClassDll.AnalaizerClass.CheckCurrency();
-            Assert.AreEqual(res, false);
+            AnalaizerClassDll.AnalaizerClass.CheckCurrency("1+(1+1");
         }
 
         [TestMethod]
-        public void Format_TrueExpression_TrueReturned()
+        public void Format_OnePlusOpenOnePlusOneClose_FormatExpressionReturned()
         {
-            string res = AnalaizerClassDll.AnalaizerClass.Format("10+ 50 * ( 1 +  9  )");
-            Assert.AreEqual(res, "10 + 50 * (1 + 9)");
+            string expected = "1 + (1 + 1)",
+                actual = AnalaizerClassDll.AnalaizerClass.Format("1+(1+1)");
+
+            Assert.AreEqual(expected, actual);
         }
 
         [TestMethod]
-        public void Format_DoubleSymbols_Error04Returned()
+        [ExpectedException(typeof(Error04))]
+        public void Format_OnePlusPlusOne_Error04Returned()
         {
-            string res = AnalaizerClassDll.AnalaizerClass.Format("10++ 50 * ( 1 +  9)");
-            Assert.AreEqual(res.Substring(0, "Error04".Length), "Error04");
+            AnalaizerClassDll.AnalaizerClass.Format("1++1");
         }
 
         [TestMethod]
-        public void Format_UnknownSymbols_Error02Returned()
+        [ExpectedException(typeof(Error03))]
+        public void Format_OneOpenOpenOpenOnePlusOneCloseCloseClose_Error03Returned()
         {
-            string res = AnalaizerClassDll.AnalaizerClass.Format("@10+ 50 * ( 1 +  9)");
-            Assert.AreEqual(res.Substring(0, "Error02".Length), "Error02");
+            AnalaizerClassDll.AnalaizerClass.Format("1(((1+1)))");
         }
 
         [TestMethod]
-        public void Format_LastSymbolsAsOperator_Error05Returned()
+        [ExpectedException(typeof(Error02))]
+        public void Format_OneAmpersandOne_Error02Returned()
         {
-            string res = AnalaizerClassDll.AnalaizerClass.Format("10+50*(1+9)+");
-            Assert.AreEqual(res.Substring(0, "Error05".Length), "Error05");
+            AnalaizerClassDll.AnalaizerClass.Format("1&1");
         }
 
         [TestMethod]
-        public void CreateStack_TrueExpression_ArrayListReturned()
+        [ExpectedException(typeof(Error05))]
+        public void Format_OnePlusOnePlus_Error05Returned()
         {
-            ArrayList res = AnalaizerClassDll.AnalaizerClass.CreateStack("10+50*(1+9)");
-            ArrayList ex = new ArrayList(new string[] { "10", "50", "1", "9", "+", "*", "+" });
-            Assert.AreEqual(ex.Count, res.Count);
-        }
-
-        [TestMethod]
-        public void RunEstimate_TrueArrayList_ResultReturned()
-        {
-            ArrayList list = new ArrayList(new string[] { "10", "50", "1", "9", "+", "*", "+" });
-            string res = AnalaizerClassDll.AnalaizerClass.RunEstimate(list);
-            Assert.AreEqual(510, res);
+            AnalaizerClassDll.AnalaizerClass.Format("1+1+");
         }
     }
 }

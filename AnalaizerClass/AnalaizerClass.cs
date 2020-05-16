@@ -151,6 +151,14 @@ namespace AnalaizerClassDll
 				{
 					try
 					{
+						if (stackDouble.Count == 1)
+						{
+							if (expression[i] == '-')
+								return (stackDouble.Peek() * (-1)).ToString();
+							else if (expression[i] == '+')
+								return stackDouble.Peek().ToString();
+						}
+
 						a = stackDouble.Peek();
 						stackDouble.Pop();
 						b = stackDouble.Peek();
@@ -165,8 +173,8 @@ namespace AnalaizerClassDll
 							case '%': stackDouble.Push(Calc.Mod(b, a)); break;
 						}
 					}
-					catch (InvalidOperationException) { return new Error03().Message; }
-					catch (Exception ex) { return ex.Message; }
+					catch (InvalidOperationException) { throw new Error03(); }
+					catch (Exception ex) { throw ex; }
 				}
 				i++;
 			}
