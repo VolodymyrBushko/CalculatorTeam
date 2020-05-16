@@ -15,6 +15,7 @@ namespace Calculator
     {
         private double Memory = 0;
         int timeForReactPlusMinus=0;
+        bool isMyBrecet = false;
         public Form1()
         {
             InitializeComponent();
@@ -44,29 +45,62 @@ namespace Calculator
         //Якщо між сусідніми натисненнями на кнопку <+/-> проходить більше 3 секунд, то до виразу дописується знак «-». 
 
         private void buttonPlusMinus_Click(object sender, EventArgs e)
-        { 
+        {
+            //Task<Book> task2 = new Task(() =>
+            //{
+            //   
+            //});
+            //task2.Start();
             timer1.Start();
             if (timeForReactPlusMinus <= 3)
             {
                 timeForReactPlusMinus = 0;
                 //введений оператор міняється на протилежний.
-
+                if (!string.IsNullOrEmpty(textBoxExpression.Text))
+                {
+                    string tmpString = textBoxExpression.Text.TrimEnd();
+                    if (tmpString.EndsWith("-"))
+                    {
+                        tmpString = tmpString.TrimEnd('-');
+                        textBoxExpression.Text = tmpString + "+";
+                    }
+                    else if (tmpString.EndsWith("+"))
+                    {
+                        tmpString = tmpString.TrimEnd('+');
+                        textBoxExpression.Text = tmpString + "-";
+                    }
+                } 
             }
             else
             {
-                //до виразу дописується знак «-». 
-                if (textBoxExpression.Text.StartsWith("-"))
+                timeForReactPlusMinus = 0;
+                //до виразу дописується знак «-».  
+                try
                 {
-                    textBoxExpression.Text = 
+                    textBoxExpression.Text = (double.Parse(textBoxExpression.Text) * (-1)).ToString();
                 }
-                
-            }
+                catch (Exception)
+                {
+                    if (!string.IsNullOrEmpty(textBoxExpression.Text))//чи ця перевірка не зайва
+                    {
+                        if (textBoxExpression.Text.StartsWith("-"))
+                        { 
+                            textBoxExpression.Text = textBoxExpression.Text.TrimStart('-');
+                            if (isMyBrecet)//треба забрати свої дужки  &  isMyBrecet=false;
+                            {
+                                //textBoxExpression.Text= textBoxExpression.Text.
 
-            try
-            {
-                textBoxExpression.Text = (double.Parse(textBoxExpression.Text) * (-1)).ToString();
+                            //isMyBrecet=false;
+                            }
+                    }
+                        else //if (textBoxExpression.Text.StartsWith("+"))
+                        {
+                            textBoxExpression.Text = "-(" + textBoxExpression.Text + ")";
+                            isMyBrecet = true;
+                        }
+                    } 
+                }
             }
-            catch (Exception) { } 
         }
 
         private void buttonMplus_Click(object sender, EventArgs e)
@@ -114,7 +148,7 @@ namespace Calculator
         private void timer1_Tick(object sender, EventArgs e)
         {
             timeForReactPlusMinus++;
-            if (timeForReactPlusMinus > 3)
+            if (timeForReactPlusMinus > 5)
             {
                 timer1.Stop();
             }
