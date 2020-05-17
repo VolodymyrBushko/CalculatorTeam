@@ -1,12 +1,10 @@
 ﻿using System;
-using System.Collections;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using AnalaizerClass.Exceptions;
-using AnalaizerClassDll;
+using CalcClassDll.Exceptions;
 
 namespace Calculator
 {
@@ -34,8 +32,6 @@ namespace Calculator
 
         private void TextBoxKeyPress(object sender, KeyPressEventArgs e)
         {
-            // (-7  (3 * 3 / 1.1) + 17 + 3 - 12) * 3  (100 / 0.3)
-            // -49272.7272727273
             try
             {
                 if (e.KeyChar == (char)Keys.Return)
@@ -62,6 +58,7 @@ namespace Calculator
         private void buttonC_Click(object sender, EventArgs e)
         {
             textBoxExpression.Clear();
+            textBoxResult.Clear();
         }
 
         private void buttonBackspace_Click(object sender, EventArgs e)
@@ -89,14 +86,13 @@ namespace Calculator
             isPressed = false;
 
             string text = textBoxExpression.Text.TrimEnd();
+            if (text == null || text.Length == 0) return;
             char last = text.Last();
 
             if (counter < 3 && "+-".Contains(last))
             {
                 text = text.Remove(text.Length - 1);
-
-                if (last == '+' || last == '-')
-                    text += last == '+' ? '-' : '+';
+                text += last == '+' ? '-' : '+';
 
                 textBoxExpression.Text = text;
             }
@@ -110,6 +106,34 @@ namespace Calculator
         {
             AnalaizerClassDll.AnalaizerClass.Expression = textBoxExpression.Text;
             textBoxResult.Text = AnalaizerClassDll.AnalaizerClass.Estimate();
+        }
+
+        private void buttonMR_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                double from = Convert.ToDouble(Clipboard.GetText());
+                textBoxExpression.Text += from.ToString();
+            }
+            catch { textBoxResult.Text = "Content of Clipboard != numeric"; }
+        }
+
+        private void buttonMplus_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                double from = Convert.ToDouble(Clipboard.GetText()),
+                 numeric = Convert.ToDouble(textBoxResult.Text);
+
+                Clipboard.SetData(DataFormats.Text, (from + numeric).ToString());
+            }
+            catch (Error06 ex) { textBoxResult.Text = ex.Message; }
+            catch (Exception) { textBoxResult.Text = "Content of Clipboard != numeric or result != numeric"; }
+        }
+
+        private void buttonMC_Click(object sender, EventArgs e)
+        {
+            Clipboard.SetData(DataFormats.Text, "0");
         }
     }
 }

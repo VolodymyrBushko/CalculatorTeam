@@ -139,7 +139,7 @@ namespace AnalaizerClassDll
 			while (i < expression.Length)
 			{
 				if (char.IsDigit(expression[i]) || expression[i] == '.'
-					|| ((expression[i] == '+' || expression[i] == '-') && char.IsDigit(expression[i + 1]))) // Якщо число з унарним +/-, то це коректно
+					|| ((expression[i] == '+' || expression[i] == '-') && char.IsDigit(expression[i + 1])))
 					tmp += expression[i];
 				else if (expression[i] == ' ' && i != (expression.Length - 1))
 				{
@@ -154,23 +154,23 @@ namespace AnalaizerClassDll
 						if (stackDouble.Count == 1)
 						{
 							if (expression[i] == '-')
-								return (stackDouble.Peek() * (-1)).ToString();
-							else if (expression[i] == '+')
-								return stackDouble.Peek().ToString();
+								stackDouble.Push(stackDouble.Pop() * (-1));
 						}
-
-						a = stackDouble.Peek();
-						stackDouble.Pop();
-						b = stackDouble.Peek();
-						stackDouble.Pop();
-
-						switch (expression[i])
+						else
 						{
-							case '+': stackDouble.Push(Calc.Add(a, b)); break;
-							case '-': stackDouble.Push(Calc.Sub(b, a)); break;
-							case '*': stackDouble.Push(Calc.Mult(a, b)); break;
-							case '/': stackDouble.Push(Calc.Div(b, a)); break;
-							case '%': stackDouble.Push(Calc.Mod(b, a)); break;
+							a = stackDouble.Peek();
+							stackDouble.Pop();
+							b = stackDouble.Peek();
+							stackDouble.Pop();
+
+							switch (expression[i])
+							{
+								case '+': stackDouble.Push(Calc.Add(a, b)); break;
+								case '-': stackDouble.Push(Calc.Sub(b, a)); break;
+								case '*': stackDouble.Push(Calc.Mult(a, b)); break;
+								case '/': stackDouble.Push(Calc.Div(b, a)); break;
+								case '%': stackDouble.Push(Calc.Mod(b, a)); break;
+							}
 						}
 					}
 					catch (InvalidOperationException) { throw new Error03(); }

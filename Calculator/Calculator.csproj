@@ -34,7 +34,8 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="AnalaizerClass">
+    <Reference Include="AnalaizerClass, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
       <HintPath>..\AnalaizerClass\bin\Debug\AnalaizerClass.dll</HintPath>
     </Reference>
     <Reference Include="CalcClassDll">
