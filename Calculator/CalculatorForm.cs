@@ -38,24 +38,14 @@ namespace Calculator
         {
             if (textBoxExpression.Text.Length > 0)
                 textBoxExpression.Text = textBoxExpression.Text.Remove(textBoxExpression.Text.Length - 1);
-        }
-
-        //Реалізувати обробники подій на кнопки: "+/-", "MR", "M+", "MC".
-        //Якщо між сусідніми натисненнями на кнопку<+/-> проходить менше 3 секунд, то введений оператор міняється на протилежний.
-        //Якщо між сусідніми натисненнями на кнопку <+/-> проходить більше 3 секунд, то до виразу дописується знак «-». 
+        } 
 
         private void buttonPlusMinus_Click(object sender, EventArgs e)
-        {
-            //Task<Book> task2 = new Task(() =>
-            //{
-            //   
-            //});
-            //task2.Start();
+        { 
             timer1.Start();
             if (timeForReactPlusMinus <= 3)
             {
-                timeForReactPlusMinus = 0;
-                //введений оператор міняється на протилежний.
+                timeForReactPlusMinus = 0; 
                 if (!string.IsNullOrEmpty(textBoxExpression.Text))
                 {
                     string tmpString = textBoxExpression.Text.TrimEnd();
@@ -73,27 +63,26 @@ namespace Calculator
             }
             else
             {
-                timeForReactPlusMinus = 0;
-                //до виразу дописується знак «-».  
+                timeForReactPlusMinus = 0;  
                 try
                 {
                     textBoxExpression.Text = (double.Parse(textBoxExpression.Text) * (-1)).ToString();
                 }
                 catch (Exception)
                 {
-                    if (!string.IsNullOrEmpty(textBoxExpression.Text))//чи ця перевірка не зайва
+                    if (!string.IsNullOrEmpty(textBoxExpression.Text)) 
                     {
                         if (textBoxExpression.Text.StartsWith("-"))
                         { 
                             textBoxExpression.Text = textBoxExpression.Text.TrimStart('-');
-                            if (isMyBrecet)//треба забрати свої дужки  &  isMyBrecet=false;
+                            if (isMyBrecet) 
                             {
-                                //textBoxExpression.Text= textBoxExpression.Text.
-
-                            //isMyBrecet=false;
+                                string strTMP = textBoxExpression.Text.Trim();
+                                textBoxExpression.Text = (strTMP.Remove(0, 1)).Remove((strTMP.Length - 2), 1);
+                                isMyBrecet =false;
                             }
                     }
-                        else //if (textBoxExpression.Text.StartsWith("+"))
+                        else  
                         {
                             textBoxExpression.Text = "-(" + textBoxExpression.Text + ")";
                             isMyBrecet = true;
@@ -119,32 +108,17 @@ namespace Calculator
         {
             Memory = 0;
         }
-        //При натисненні на кнопку MR число з пам'яті приписується в кінець виразу в рядку «Вираз». 
+         
         private void buttonMR_Click(object sender, EventArgs e)
         {
             textBoxExpression.Text += Memory.ToString();
         }
-
-        private double GetLastNumber(string expression)
+         
+        private void buttonEqaul_Click(object sender, EventArgs e)
         {
-            string forGetRes = "";
-            int i = expression.Length - 1;
-            double res;
-            try
-            {
-                while (Convert.ToDouble(forGetRes + expression[i]) > double.MinValue && Convert.ToDouble(forGetRes + expression[i]) < double.MaxValue && i > -1)
-                {
-                    forGetRes += expression[i];
-                }
-            }
-            catch (Exception)
-            {  
-            }
- 
-            res = Convert.ToDouble(forGetRes);
-            return res;
+            AnalaizerClassDll.AnalaizerClass.Expression = textBoxExpression.Text;
+            textBoxResult.Text = AnalaizerClassDll.AnalaizerClass.Estimate();
         }
-
         private void timer1_Tick(object sender, EventArgs e)
         {
             timeForReactPlusMinus++;
@@ -152,6 +126,6 @@ namespace Calculator
             {
                 timer1.Stop();
             }
-        }
+        }                     
     }
 }
