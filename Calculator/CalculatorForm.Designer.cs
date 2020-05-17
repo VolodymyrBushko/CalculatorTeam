@@ -215,6 +215,8 @@
             this.buttonPlusMinus.TabIndex = 12;
             this.buttonPlusMinus.Text = "+/-";
             this.buttonPlusMinus.UseVisualStyleBackColor = true;
+            this.buttonPlusMinus.MouseDown += new System.Windows.Forms.MouseEventHandler(this.buttonPlusMinus_MouseDown);
+            this.buttonPlusMinus.MouseUp += new System.Windows.Forms.MouseEventHandler(this.buttonPlusMinus_MouseUp);
             this.buttonPlusMinus.Click += new System.EventHandler(this.buttonPlusMinus_Click);
             // 
             // buttonPlus

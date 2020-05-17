@@ -1,8 +1,7 @@
-﻿using System;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-using AnalaizerClassDll;
+﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using AnalaizerClass.Exceptions;
 using System.Collections;
+using CalcClassDll.Exceptions;
 
 namespace AnalaizerClassDllTests
 {
@@ -60,6 +59,48 @@ namespace AnalaizerClassDllTests
         public void Format_OnePlusOnePlus_Error05Returned()
         {
             AnalaizerClassDll.AnalaizerClass.Format("1+1+");
+        }
+
+        [TestMethod]
+        public void CreateStack_FiveMulOpenFiveMulFiveClose_TrueReturned()
+        {
+            ArrayList actual = AnalaizerClassDll.AnalaizerClass.CreateStack("5 * (5 * 5)"),
+                expected = new ArrayList(new string[] { "5", "5", "5", "*", "*" });
+
+            Assert.AreEqual(expected.Count, actual.Count);
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(Error08))]
+        public void CreateStack_BiggerForMaxLength_Error08Returned()
+        {
+            string expression = "1+1+1+1+1+1+1+1+1+1+1+1+1+1+1+1";
+            AnalaizerClassDll.AnalaizerClass.CreateStack(expression);
+        }
+
+        [TestMethod]
+        public void RunEstimate_OnePlusOne_TwoReturned()
+        {
+            ArrayList stack = AnalaizerClassDll.AnalaizerClass.CreateStack("1+1");
+            string actual = AnalaizerClassDll.AnalaizerClass.RunEstimate(stack), expected = "2";
+
+            Assert.AreEqual(expected, actual);
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(Error03))]
+        public void RunEstimate_MaxValuePlusMaxValue_Error03Returned()
+        {
+            ArrayList stack = AnalaizerClassDll.AnalaizerClass.CreateStack($"{double.MaxValue}+{double.MaxValue}");
+            AnalaizerClassDll.AnalaizerClass.RunEstimate(stack);
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(Error09))]
+        public void RunEstimate_OneDividedByZero_Error09Returned()
+        {
+            ArrayList stack = AnalaizerClassDll.AnalaizerClass.CreateStack("1/0");
+            AnalaizerClassDll.AnalaizerClass.RunEstimate(stack);
         }
     }
 }

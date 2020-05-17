@@ -14,6 +14,8 @@ namespace Calculator
     public partial class Form1 : Form
     {
         private const int MAXTEXT = 65536;
+        private static bool isPressed = false;
+        private static int counter = 0;
 
         private double Memory = 0;
         int timeForReactPlusMinus=0;
